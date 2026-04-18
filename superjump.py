@@ -624,11 +624,11 @@ def draw_shop(surf, player):
 
     cx=SCREEN_W//2
     # Add a panel behind the shop content so text is readable
-    draw_panel(surf, cx-330, 40, 660, 520, alpha=180)
+    draw_panel(surf, cx-340, 20, 680, 560, alpha=180)
 
     # Title
-    draw_text_shadow(surf,"=== ร้านค้าระหว่างด่าน ===",font_big,SPEED_COL,cx-275,60)
-    draw_text_shadow(surf,f"เหรียญคงเหลือ: {player.coins} เหรียญ",font_med,COIN_COL,cx-145,120)
+    draw_text_shadow(surf,"=== ร้านค้าระหว่างด่าน ===",font_big,SPEED_COL,cx-275,35)
+    draw_text_shadow(surf,f"เหรียญคงเหลือ: {player.coins} เหรียญ",font_med,COIN_COL,cx-145,85)
 
     def avail(cond): return WHITE if cond else (80,80,80)
     can=[
@@ -648,11 +648,11 @@ def draw_shop(surf, player):
         ("6","รองเท้ากันหนาม Boots","50 เหรียญ",BOOTS_COL,can[5]),
     ]
     for i,(key,name,price,dot_col,c) in enumerate(items):
-        iy=185+i*50
+        iy=140+i*52
         row=i%2; col_x=cx-300 if row==0 else cx+30
-        col_y=185+(i//2)*50 if False else iy  # single column, easier read
-        pygame.draw.rect(surf,(*dot_col,60),(cx-290,iy-2,580,40),border_radius=8)
-        pygame.draw.rect(surf,(*dot_col,120),(cx-290,iy-2,580,40),2,border_radius=8)
+        col_y=140+(i//2)*52 if False else iy  # single column, easier read
+        pygame.draw.rect(surf,(*dot_col,60),(cx-290,iy-2,580,44),border_radius=8)
+        pygame.draw.rect(surf,(*dot_col,120),(cx-290,iy-2,580,44),2,border_radius=8)
         draw_text_shadow(surf,f"{key}. {name}",font_med,avail(c),cx-275,iy+4)
         lbl=font_small.render(price,True,dot_col)
         surf.blit(lbl,(cx+200,iy+8))
@@ -663,10 +663,10 @@ def draw_shop(surf, player):
         "ปืน: 20 dmg  |  ลูกบอลไฟ: 15 dmg + ไหม้ 2/วิ x 5 วิ",
     ]
     for i,d in enumerate(desc):
-        surf.blit(font_tiny.render(d,True,(180,180,220)),(cx-290,505+i*18))
+        surf.blit(font_tiny.render(d,True,(180,180,220)),(cx-290,465+i*20))
 
     hint=font_med.render("กด ENTER ไปด่านต่อไป ->",True,(100,255,100))
-    surf.blit(hint,(cx-hint.get_width()//2,482))
+    surf.blit(hint,(cx-hint.get_width()//2,535))
 
 # ── Level Generator ────────────────────────────────────────────────────────────
 def build_level(level_num):
