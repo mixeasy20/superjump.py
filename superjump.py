@@ -637,7 +637,7 @@ def draw_shop(surf, player):
         player.coins>=40 and player.ammo<10,
         player.coins>=35 and player.fireball_ammo<6,
         player.coins>=100 and not player.has_shield,
-        player.coins>=30 and (not player.has_boots or player.boots_dur<6),
+        player.coins>=50 and (not player.has_boots or player.boots_dur<6),
     ]
     items=[
         ("1","ฟื้นฟู HP +50","20 เหรียญ",HP_GREEN,can[0]),
@@ -645,7 +645,7 @@ def draw_shop(surf, player):
         ("3","กระสุนปืน 10 นัด (G)","40 เหรียญ",BULLET_COL,can[2]),
         ("4","ลูกบอลไฟ 6 ลูก (H)","35 เหรียญ",FIREBALL_COL,can[3]),
         ("5","เกราะสะท้อน [SHIELD]","100 เหรียญ",SHIELD_COL,can[4]),
-        ("6","รองเท้ากันหนาม Boots","30 เหรียญ",BOOTS_COL,can[5]),
+        ("6","รองเท้ากันหนาม Boots","50 เหรียญ",BOOTS_COL,can[5]),
     ]
     for i,(key,name,price,dot_col,c) in enumerate(items):
         iy=185+i*50
@@ -757,8 +757,8 @@ def main():
                         player.coins-=35; player.fireball_ammo=6
                     if event.key==pygame.K_5 and player.coins>=100 and not player.has_shield:
                         player.coins-=100; player.has_shield=True
-                    if event.key==pygame.K_6 and player.coins>=30 and (not player.has_boots or player.boots_dur<6):
-                        player.coins-=30; player.has_boots=True; player.boots_dur=6
+                    if event.key==pygame.K_6 and player.coins>=50 and (not player.has_boots or player.boots_dur<6):
+                        player.coins-=50; player.has_boots=True; player.boots_dur=6
                     if event.key==pygame.K_RETURN:
                         level_num+=1
                         if level_num>TOTAL_LEVELS: state="win"
