@@ -2,7 +2,6 @@ import pygame
 import sys
 import random
 import math
-import os
 
 pygame.init()
 pygame.mixer.init()
@@ -45,21 +44,15 @@ screen = pygame.display.set_mode((SCREEN_W, SCREEN_H))
 pygame.display.set_caption("🌟 SuperPlatformer  —  นายทำได้เว้ยยย!")
 clock = pygame.time.Clock()
 
-# Thai-compatible fonts + Google Kanit
+# Thai-compatible fonts
+_TH_FONTS = ["leelawadeeui", "leelawadee", "tahoma", "microsoft sans serif"]
 def _thai_font(size, bold=False):
-    font_file = "Kanit-Bold.ttf" if bold else "Kanit-Medium.ttf"
-    if os.path.exists(font_file):
-        try:
-            return pygame.font.Font(font_file, size)
-        except: pass
-    _TH_FONTS = ["leelawadeeui", "leelawadee", "tahoma", "microsoft sans serif"]
     for name in _TH_FONTS:
         f = pygame.font.SysFont(name, size, bold=bold)
         if f is not None:
             return f
     return pygame.font.SysFont(None, size, bold=bold)
 
-font_giant = _thai_font(64, bold=True)
 font_big   = _thai_font(48, bold=True)
 font_med   = _thai_font(28, bold=True)
 font_small = _thai_font(20)
@@ -693,9 +686,9 @@ def main():
                 elif state == "play":
                     if event.key in (pygame.K_SPACE, pygame.K_UP, pygame.K_w):
                         player.jump()
-                    if event.key == pygame.K_f:
+                    if event.key == pygame.K_z:
                         player.slash()
-                    if event.key == pygame.K_g:
+                    if event.key == pygame.K_x:
                         player.shoot(bullets)
                     if event.key == pygame.K_ESCAPE:
                         sys.exit()
@@ -779,52 +772,12 @@ def main():
         draw_sky(screen)
 
         if state == "start":
-            t = pygame.time.get_ticks()
-            
-            # Subtle grid background scrolling
-            for i in range(0, SCREEN_W, 60):
-                x = (i - t * 0.05) % SCREEN_W
-                pygame.draw.line(screen, (40, 40, 80), (x, 0), (x, SCREEN_H))
-                
-            # Floating Character Preview
-            px, py = SCREEN_W//2 - 20, 100 + math.sin(t * 0.005) * 10
-            player_col = (100, 240, 220)
-            pygame.draw.rect(screen, player_col, (px, py, 40, 50), border_radius=8)
-            pygame.draw.rect(screen, (50,50,180), (px, py+35, 40, 8), border_radius=4)
-            pygame.draw.circle(screen, WHITE, (px+28, py+15), 8)
-            pygame.draw.circle(screen, (30,30,30),(px+30, py+16), 4)
-            
-            # Draw bouncing title
-            title_y = 190 + math.sin(t * 0.003) * 10
-            title = font_giant.render("⭐ SUPER PLATFORMER ⭐", True, SCORE_COL)
-            
-            # Create a glow effect
-            alpha_glow = int(128 + math.sin(t * 0.005) * 127)
-            glow_surf = font_giant.render("⭐ SUPER PLATFORMER ⭐", True, (255,200,0))
-            glow_surf.set_alpha(alpha_glow)
-            
-            draw_text_shadow(screen, "⭐ SUPER PLATFORMER ⭐", font_giant, SCORE_COL, SCREEN_W//2 - title.get_width()//2, title_y, shadow=(0,0,0))
-            screen.blit(glow_surf, (SCREEN_W//2 - title.get_width()//2, title_y))
-
-            # Controls Box
-            box_w, box_h = 600, 130
-            box_rect = pygame.Rect(SCREEN_W//2 - box_w//2, 300, box_w, box_h)
-            s = pygame.Surface((box_w, box_h), pygame.SRCALPHA)
-            s.fill((0, 0, 0, 150))
-            pygame.draw.rect(s, (80, 80, 150), s.get_rect(), 3, border_radius=10)
-            screen.blit(s, box_rect.topleft)
-
-            ctrl1 = font_med.render("🏃 เดิน: ลูกศรซ้ายขวา   🚀 กระโดด: SPACE", True, WHITE)
-            ctrl2 = font_med.render("⚔️ ฟันดาบ: กด F      🔫 ยิงปืน: กด G", True, (200, 255, 200))
-            
-            screen.blit(ctrl1, (SCREEN_W//2 - ctrl1.get_width()//2, 320))
-            screen.blit(ctrl2, (SCREEN_W//2 - ctrl2.get_width()//2, 370))
-
-            # Pulsing Enter Text
-            pulse = math.fabs(math.sin(t * 0.004))
-            msg_col = lerp_color(SPEED_COL, (100, 100, 255), pulse)
-            msg = font_big.render("✨ กด ENTER เพื่อลุยด่าน 1! ✨", True, msg_col)
-            screen.blit(msg, (SCREEN_W//2 - msg.get_width()//2, 480))
+            title = font_big.render("🌟 SUPER PLATFORMER", True, SCORE_COL)
+            ctrl = font_med.render("เดิน: วิ่งซ้ายขวา | กระโดด: SPACE | ดาบ: F | ปืน: G", True, WHITE)
+            msg = font_med.render("กด ENTER เพื่อลุยด่าน 1!", True, SPEED_COL)
+            screen.blit(title, (SCREEN_W//2 - title.get_width()//2, 150))
+            screen.blit(ctrl, (SCREEN_W//2 - ctrl.get_width()//2, 280))
+            screen.blit(msg, (SCREEN_W//2 - msg.get_width()//2, 400))
 
         elif state in ["play", "shop"]:
             for p in platforms: p.draw(screen, cam)
