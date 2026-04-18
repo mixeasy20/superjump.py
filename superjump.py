@@ -620,10 +620,13 @@ def draw_hud(surf, player, level_num):
 # ── Shop ───────────────────────────────────────────────────────────────────────
 def draw_shop(surf, player):
     overlay=pygame.Surface((SCREEN_W,SCREEN_H),pygame.SRCALPHA)
-    overlay.fill((0,0,20,220)); surf.blit(overlay,(0,0))
+    overlay.fill((0,0,20,120)); surf.blit(overlay,(0,0))
+
+    cx=SCREEN_W//2
+    # Add a panel behind the shop content so text is readable
+    draw_panel(surf, cx-330, 40, 660, 520, alpha=180)
 
     # Title
-    cx=SCREEN_W//2
     draw_text_shadow(surf,"=== ร้านค้าระหว่างด่าน ===",font_big,SPEED_COL,cx-275,60)
     draw_text_shadow(surf,f"เหรียญคงเหลือ: {player.coins} เหรียญ",font_med,COIN_COL,cx-145,120)
 
