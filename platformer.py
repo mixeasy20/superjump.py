@@ -65,6 +65,30 @@ font_med   = _thai_font(28, bold=True)
 font_small = _thai_font(20)
 font_tiny  = _thai_font(16)
 
+# ── Audio ──────────────────────────────────────────────────────────────────────
+try:
+    sfx_jump = pygame.mixer.Sound("jump.wav")
+    sfx_coin = pygame.mixer.Sound("coin.wav")
+    sfx_shoot = pygame.mixer.Sound("shoot.wav")
+    sfx_hit = pygame.mixer.Sound("hit.wav")
+    sfx_jump.set_volume(0.4)
+    sfx_coin.set_volume(0.5)
+    sfx_shoot.set_volume(0.4)
+    sfx_hit.set_volume(0.6)
+except Exception as e:
+    print("Could not load SFX:", e)
+    class DummySound:
+        def play(self): pass
+    sfx_jump = sfx_coin = sfx_shoot = sfx_hit = DummySound()
+
+def play_bgm():
+    try:
+        pygame.mixer.music.load("bgm.wav")
+        pygame.mixer.music.set_volume(0.25)
+        pygame.mixer.music.play(-1)
+    except: pass
+
+
 def draw_text_shadow(surf, text, font, color, x, y, shadow=(0,0,0)):
     s = font.render(text, True, shadow)
     surf.blit(s, (x+2, y+2))
@@ -211,6 +235,7 @@ class Player:
         if self.invincible > 0: return
         self.hp -= amount
         self.invincible = 60
+        sfx_hit.play()
         emit_particles(self.rect.centerx, self.rect.centery, HP_RED, 10, 4)
         if self.hp <= 0:
             self.hp = 0
@@ -219,6 +244,7 @@ class Player:
     def slash(self):
         if not self.has_sword or self.slash_timer > 0: return
         self.slash_timer = 20
+        sfx_shoot.play() # Use shoot for sword sound too
         # Create hitbox
         sx = self.rect.right if self.facing_right else self.rect.left - 40
         self.slash_rect = pygame.Rect(sx, self.rect.y+10, 40, 30)
@@ -226,6 +252,7 @@ class Player:
     def shoot(self, bullets):
         if self.ammo > 0:
             self.ammo -= 1
+            sfx_shoot.play()
             bx = self.rect.right if self.facing_right else self.rect.left - 12
             bullets.append(Bullet(bx, self.rect.centery, self.facing_right))
 
@@ -289,16 +316,17 @@ class Player:
         for s in spikes:
             if self.rect.colliderect(s.rect):
                 self.take_damage(10) # 10 dmg from spikes
+                sfx_hit.play()
                 self.vy = -8 # bounce
                 self.rect.y -= 10
 
-        # Sword hits
         if self.slash_rect:
             for e in enemies:
                 if e.alive and self.slash_rect.colliderect(e.rect):
                     e.alive = False
                     self.score += 50
                     self.coins += 5 # Bonus coin for sword kill
+                    sfx_hit.play()
                     emit_particles(e.rect.centerx, e.rect.centery, ENEMY_COL, 14, 5)
 
         # Anim
@@ -311,6 +339,7 @@ class Player:
         if self.jump_count < 2:
             self.vy = JUMP_FORCE if self.jump_count == 0 else JUMP_FORCE * 0.8
             self.jump_count += 1
+            sfx_jump.play()
             emit_particles(self.rect.centerx, self.rect.bottom, (200,200,255), 6, 2)
 
     def draw(self, surf, cam):
@@ -486,13 +515,13 @@ class Enemy:
             self.alive = False
             return
 
-        # Player col
         if self.rect.colliderect(player.rect) and self.stomp_cooldown == 0:
             if player.vy > 0 and player.rect.bottom <= self.rect.centery + 12:
                 self.alive = False
                 player.vy  = JUMP_FORCE * 0.7
                 player.score += 50
                 player.coins += 2
+                sfx_hit.play()
                 emit_particles(self.rect.centerx, self.rect.centery, ENEMY_COL, 14, 5)
             else:
                 player.take_damage(5)
@@ -654,6 +683,7 @@ def build_level(level_num):
 
 # ── Main ────────────────────────────────────────────────────────────────────────
 def main():
+    play_bgm()
     state = "start"
     level_num = 1
     player = Player()
@@ -736,6 +766,7 @@ def main():
                 c.update()
                 if not c.collected and player.rect.colliderect(c.rect):
                     c.collected = True
+                    sfx_coin.play()
                     player.score += 10
                     player.coins += 2
                     emit_particles(c.rect.centerx, c.rect.centery, COIN_COL, 8, 3)
@@ -756,6 +787,7 @@ def main():
                 for e in enemies:
                     if e.alive and b.rect.colliderect(e.rect):
                         e.alive = False
+                        sfx_hit.play()
                         player.score += 50
                         player.coins += 5 # bonus coin
                         emit_particles(e.rect.centerx, e.rect.centery, ENEMY_COL, 14, 5)
